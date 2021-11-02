@@ -1,0 +1,71 @@
+#Creating variables for inputs 'height' and 'skier type'
+hei = int(input("What is your height in cm? "))
+typ = str(input("Are you an all-mountain, freestyle, racer or freeski rider? "))
+#if/else statements to sort through skier types and do calculation
+if typ == "all-mountain":
+    outMIN = int(hei - 5)
+    outMAX = int(hei - 3)
+    print("Your recommended ski height is", hei - 5, "-", hei - 3, "cm")
+elif typ == "freestyle":
+    outMIN = int(hei - 7)
+    outMAX = int(hei - 2)
+    print("Your recommended ski height is", hei - 7, "-", hei -2, "cm")
+elif typ == "freeski":
+    outMIN = int(hei)
+    outMAX = int(hei + 5)
+    print("Your recommended ski height is", hei, "-", hei + 5, "cm")
+elif typ == "racer":
+    outMIN = int(hei + 3)
+    outMAX = int(hei + 7)
+    print("Your recommended ski height is", hei + 3, "-", hei + 7, "cm")
+else:
+    print("Error, please try again")
+    
+#if/else statement for purchase intent
+pur = input("Would you like to purchase some skis? ")
+if pur =="yes":
+    print("Hold on, we're redirecting you to shop for some fresh skis!")
+    #insert link to ski shop page
+elif pur == "no":
+    print("No worries. We hope you change your mind.")
+else:
+    print ("Error, please try again")
+    
+
+#Connecting MySQL to python
+import mysql.connector
+#Connecting to server
+mydb = mysql.connector.connect(
+    host='localhost', 
+    user='Ethan',
+    password='CODEA3',
+    database='ski_details')
+#Creating cursor object
+mycursor = mydb.cursor()
+#Defining SQL query and values
+sql = "INSERT INTO customer_info (Height, Style, RecommendationMIN, RecommendationMAX, Purchase) VALUES (%s, %s, %s, %s, %s);"
+val = (hei, typ, outMIN, outMAX, pur)
+#Executing query with values via cursor object 
+mycursor.execute(sql, val)
+#Commiting changes
+mydb.commit()
+
+
+
+#Finding all recommendation values for (out)
+mycursor = mydb.cursor()
+sql2 = "SELECT * FROM customer_info WHERE RecommendationMIN LIKE '%s' AND RecommendationMAX Like '%s';"
+val2 = (outMIN, outMAX)
+mycursor.execute(sql2, val2)
+#Getting all records
+resultsall = mycursor.fetchall()
+
+sql3 = "SELECT * FROM customer_info WHERE RecommendationMIN LIKE '%s' AND RecommendationMax LIKE '%s' AND Purchase LIKE 'yes';"
+val3 = (outMIN, outMAX)
+mycursor.execute(sql3, val3)
+resultsyes = mycursor.fetchall()
+#Calculating percentage with len, which counts all elements in a list
+percentage = (len(resultsyes)/len(resultsall)) * 100
+print(round(percentage, 2), "% of people with similar measurements purchased this ski height!")
+#closing the cursor object, which is good practice
+mycursor.close()
