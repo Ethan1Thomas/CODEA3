@@ -1,1 +1,12 @@
+USE ski_details;
 
+CREATE TABLE customer_info
+(
+id			            INT unsigned NOT NULL auto_increment,
+height		          INT(3) NOT NULL,
+style		            VARCHAR(50) NOT NULL,
+recommendationMIN   INT(6) NOT NULL,
+recommendationMAX   INT(6) NOT NULL,
+purchase            VARCHAR(5) NOT NULL,
+PRIMARY KEY	        (id)
+);
